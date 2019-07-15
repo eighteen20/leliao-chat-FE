@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+	<link href="css/header.css" rel="stylesheet" />
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+		
+		// 移动设备就绪完的操作
+		mui.plusReady(function() {
+			plus.navigator.setStatusBarStyle("light");
+			plus.navigator.setStatusBarBackground("#DD524D");
+		});
+    </script>
+</head>
+<body>
+	<!-- 顶部标题栏 -->
+	<header class="mui-bar mui-bar-nav title">
+		<h1 class="mui-title title-color">
+			<b>乐聊</b>
+		</h1>
+	</header>
+	
+	<!-- 底部选项卡 -->
+	<nav class="mui-bar mui-bar-tab">
+		<a class="mui-tab-item mui-active" tabindex="0">
+			<span class="mui-icon mui-icon-chatboxes"></span>
+			<span class="mui-tab-label">乐聊</span>
+		</a>
+		<a class="mui-tab-item" tabindex="1">
+			<span class="mui-icon mui-icon-contact"></span>
+			<span class="mui-tab-label">通讯录</span>
+		</a>
+		<a class="mui-tab-item" tabindex="2">
+			<span class="mui-icon mui-icon-navigate"></span>
+			<span class="mui-tab-label">发现</span>
+		</a>
+		<a class="mui-tab-item" tabindex="3">
+			<span class="mui-icon mui-icon-person"></span>
+			<span class="mui-tab-label">我的</span>
+		</a>
+	</nav>
+	
+	
+	<script type="application/javascript">
+		// 页面对象数组
+		var leliaoArray = [
+			{
+				pageId: "le-chatlist.html",
+				pageUrl: "le-chatlist.html"
+			},
+			{
+				pageId: "le-contact.html",
+				pageUrl: "le-contact.html"
+			},
+			{
+				pageId: "le-discover.html",
+				pageUrl: "le-discover.html"
+			},
+			{
+				pageId: "le-me.html",
+				pageUrl: "le-me.html"
+			}
+		];
+		// 子页面webview样式
+		var leliaoStyle = {
+			top: "44px",
+			bottom: "50px"
+		}
+		
+		mui.plusReady(function() {
+			// 获取当前页面的webview
+			var indexWebview = plus.webview.currentWebview();
+			// 向indexWebview追加子页webview对象
+			for (var i = 0; i < leliaoArray.length; i ++) {
+				var leliaoPage = plus.webview.create(leliaoArray[i].pageUrl, leliaoArray[i].pageId,
+														leliaoStyle);
+				// 隐藏webview
+				leliaoPage.hide();
+				// 追加每个子页面到主页面
+				indexWebview.append(leliaoPage);
+			}
+			// 默认显示页面
+			plus.webview.show(leliaoArray[0].pageId)
+			 
+			// 批量绑定tap事件,展示不同页面
+			mui(".mui-bar-tab").on("tap", "a", function() {
+				var tabindex = this.getAttribute("tabindex");
+				// 显示点击的tab选项对应的页面
+				plus.webview.show(leliaoArray[tabindex].pageId, "fade-in", 200);
+				// 隐藏其它页面
+				for (var i = 0; i < leliaoArray.length; i ++) {
+					if (i != tabindex) {
+						plus.webview.hide(leliaoArray[i].pageId, "fade-out", 200);
+					} else{
+						
+					}
+				}
+			});
+		});
+	</script>
+</body>
+</html>
