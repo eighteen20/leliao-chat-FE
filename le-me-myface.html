@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/header.css" type="text/css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<h1 class="mui-title title-color">我的头像</h1>
+			<a id="openMenu" class="mui-icon mui-icon-right-nav mui-pull-right title-color">···</a>
+		</header>	
+		
+		<div class="mui-content">
+			<img id="img_face" src="image/bg.png" />
+		</div>
+		
+		<div id="sheet_myface" class="mui-popover mui-popover-bottom mui-popover-action ">
+			<!-- 可选择菜单 -->
+			<ul class="mui-table-view">
+			  <li class="mui-table-view-cell">
+				<a id="link_chooseImg" href="#">选择图片</a>
+			  </li>
+			  <li class="mui-table-view-cell">
+				<a id="link_saveImg" href="#">保存图片</a>
+			  </li>
+			</ul>
+			<!-- 取消菜单 -->
+			<ul class="mui-table-view">
+			  <li class="mui-table-view-cell">
+				<a href="#sheet_myface"><b>取消</b></a>
+			  </li>
+			</ul>
+		</div>
+		
+		
+		<script src="js/mui.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			mui.plusReady(function() {
+				var userInfo = app.getUserGlobalInfo();	
+				var img_face = document.getElementById("img_face");
+				if (userInfo != null) {
+					var faceImage = userInfo.faceImage;
+					if (app.isNotNull(faceImage)) {
+						img_face.src = app.imgServerUrl + faceImage;
+					}
+				}
+				// 获取手机端可见屏幕的宽度
+				var imgWidth = document.body.clientWidth;
+				img_face.width = imgWidth;
+				img_face.height = imgWidth;
+				
+				// 绑定选择菜单
+				var openMenu = document.getElementById("openMenu");
+				openMenu.addEventListener("tap", function() {
+					mui("#sheet_myface").popover("toggle");
+				});
+				
+				// 绑定选择照片
+				var link_chooseImg = document.getElementById("link_chooseImg");
+				link_chooseImg.addEventListener("tap", function() {
+					mui.openWindow("plugin/v3.1.6/myface-uploader.html", "uploader.html");
+					mui("#sheet_myface").popover("toggle");
+				});
+				
+				// 绑定保存照片
+				var link_saveImg = document.getElementById("link_saveImg");
+				link_saveImg.addEventListener("tap", function() {
+					
+				});
+			});
+		</script>
+	</body>
+
+</html>

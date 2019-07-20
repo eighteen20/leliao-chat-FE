@@ -73,6 +73,11 @@
 		}
 		
 		mui.plusReady(function() {
+			// 禁用手机实体返回键
+			mui.back = function() {
+				return false;
+			}
+			
 			// 获取当前页面的webview
 			var indexWebview = plus.webview.currentWebview();
 			// 向indexWebview追加子页webview对象
