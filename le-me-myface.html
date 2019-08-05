@@ -17,7 +17,7 @@
 		</header>	
 		
 		<div class="mui-content">
-			<img id="img_face" src="image/bg.png" />
+			<img id="img_face" src="#" />
 		</div>
 		
 		<div id="sheet_myface" class="mui-popover mui-popover-bottom mui-popover-action ">
@@ -45,14 +45,14 @@
 			mui.init()
 			
 			mui.plusReady(function() {
-				var userInfo = app.getUserGlobalInfo();	
-				var img_face = document.getElementById("img_face");
-				if (userInfo != null) {
-					var faceImage = userInfo.faceImage;
-					if (app.isNotNull(faceImage)) {
-						img_face.src = app.imgServerUrl + faceImage;
-					}
-				}
+				
+				refreshFace();
+				
+				// 添加自定义事件:刷新头像
+				window.addEventListener("refresh", function() {
+					refreshFace();
+				})
+				
 				// 获取手机端可见屏幕的宽度
 				var imgWidth = document.body.clientWidth;
 				img_face.width = imgWidth;
@@ -67,16 +67,51 @@
 				// 绑定选择照片
 				var link_chooseImg = document.getElementById("link_chooseImg");
 				link_chooseImg.addEventListener("tap", function() {
-					mui.openWindow("plugin/v3.1.6/myface-uploader.html", "uploader.html");
+					mui.openWindow({
+						url: "plugin/v3.1.6/myface-uploader.html",
+						id: "myface-uploader.html",
+						createNew: true});
 					mui("#sheet_myface").popover("toggle");
 				});
 				
 				// 绑定保存照片
 				var link_saveImg = document.getElementById("link_saveImg");
 				link_saveImg.addEventListener("tap", function() {
-					
+					plus.nativeUI.showWaiting("下载中...");
+					var userInfo = app.getUserGlobalInfo();	
+					var faceImageBig = userInfo.faceImageBig;
+					// 创建下载任务
+					var dtast = plus.downloader.createDownload(
+						app.imgServerUrl + faceImageBig,
+						{},
+						function(downloadFile, status) {
+							plus.nativeUI.closeWaiting();
+							if (status == 200) {
+								var tempFile = downloadFile.filename;
+								// 通过相册API保存头像
+								plus.gallery.save(tempFile, function() {
+									app.showToast("保存到本地相册", "success")
+								});
+							} else {
+								app.showToast("头像下载错误...", "error")
+								console.log("头像下载错误...")
+							}
+						}
+					);
+					dtast.start(); 	// 启动下载任务
 				});
 			});
+			
+			function refreshFace() {
+				var userInfo = app.getUserGlobalInfo();	
+				var img_face = document.getElementById("img_face");
+				if (userInfo != null) {
+					var faceImageBig = userInfo.faceImageBig;
+					if (app.isNotNull(faceImageBig)) {
+						img_face.src = app.imgServerUrl + faceImageBig;
+					}
+				}
+			}
 		</script>
 	</body>
 

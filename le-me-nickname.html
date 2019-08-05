@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/header.css" type="text/css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<h1 class="mui-title title-color">昵称</h1>
+			<a id="submit_nickname" class="mui-icon mui-icon-right-nav mui-pull-right title-color" 
+				style="font-size: 14px; line-height: 25px;">完成</a>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-input-row">
+				<input id="input_nickname" type="text" class="mui-input-speech mui-input-clear" placeholder="修改昵称">
+			</div>
+		</div>
+
+
+		<script src="js/mui.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function() {
+				var user = app.getUserGlobalInfo();
+				var nickname = user.nickname;
+				
+				var input_nickname = document.getElementById("input_nickname");
+				input_nickname.value = nickname;
+				
+				// 提交:修改昵称
+				var submit_nickname = document.getElementById("submit_nickname");
+				submit_nickname.addEventListener("tap", function() {
+					var newNickName = input_nickname.value;
+					if (newNickName.length > 8) {
+						app.showToast("长度不能超过8位", "error");
+						return false;
+					}
+					if (newNickName.length < 1) {
+						app.showToast("长度不能小于1位", "error");
+						return false;
+					} 
+					
+					plus.nativeUI.showWaiting("修改中...")
+					mui.ajax(app.serverUrl + "/u/setNickname",{
+						data:{
+							id: user.id,
+							nickName: newNickName
+						},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(data){
+							plus.nativeUI.closeWaiting();
+							if (data.status === 200) {
+								var userInfoJson = data.data;
+								app.setUserGlobalInfo(userInfoJson);
+								
+								// 获取页面,调用自定义事件
+								var le_me_webView = plus.webview.getWebviewById("le-me.html");
+								mui.fire(le_me_webView,'refresh')
+								
+								// 跳转页面
+								mui.back();
+								// mui.openWindow("index.html", "index.html");
+							} else {
+								app.showToast(data.msg, "error");
+							}
+						}
+					});
+				})
+				
+				
+			});
+		</script>
+	</body>
+
+</html>

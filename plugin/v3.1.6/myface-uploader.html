@@ -40,7 +40,7 @@
 		<!-- Content -->
 		<div id="container">
 			<div class="img-container">
-				<img id="image" src="" style="background-color: #000000;">
+				<img id="image" src="#" style="background-color: #000000;">
 			</div>
 		</div>
 
@@ -65,13 +65,13 @@
 				/** ======================== 从相册选择图片 ======================== **/
 					// 从相册中选择图片
 					console.log("从相册中选择图片:");
-				    plus.gallery.pick( function(path){
+				    plus.gallery.pick(function(path) {
 				    	$image.attr('src', path);
 				    	faceCutter();
-				    }, function ( e ) {
+				    }, function (e) {
 				    	mui.openWindow("index.html", "index.html");
 				    }, {filter:"image"} );
-				
+					console.log("从相册中选择图片完成:");
 				/** ======================== 图片裁剪 ======================== **/
 				
 				$("#cutter").on('tap', function() {
@@ -79,12 +79,48 @@
 					plus.nativeUI.showWaiting( "上传中..." );
 					
 					var cropper = $image.data('cropper');
+					console.log("cropper:" + cropper);
 					var result = $image.cropper("getCroppedCanvas");
+					console.log("resultURL:" + result.toDataURL());
 					if(result) {
+						console.log("进入if:");
 						var base64Url = result.toDataURL();
-						console.log(base64Url);
-						// 上传头像
+						console.log("base64Url:" + base64Url);
 						
+						// 上传头像
+						var user = app.getUserGlobalInfo();
+						console.log("user:" + JSON.stringify(user));
+						mui.ajax(app.serverUrl + "/u/uploadFaceBase64",{
+								data:{
+									id: user.id,
+									faceData: base64Url
+								},
+								dataType:'json',//服务器返回json格式数据
+								type:'post',//HTTP请求类型
+								timeout:10000,//超时时间设置为10秒；
+								headers:{'Content-Type':'application/json'},	              
+								success:function(data){
+									// TODO bug待解决
+									console.log("上传头像完成" + JSON.stringify(data));
+									// 关闭等待框
+									plus.nativeUI.closeWaiting();
+									if (data.status === 200) {
+										var userInfo = data.data;
+										app.setUserGlobalInfo(user);
+										// 获取"我的"页面,调用自定义事件
+										var le_me_webView = plus.webview.getWebviewById("le-me.html");
+										mui.fire(le_me_webView,'refresh');
+										// 获取"我的头像"页面,调用自定义事件
+										var le_me_webView = plus.webview.getWebviewById("le-me-myface.html");
+										mui.fire(le_me_webView,'refresh')
+										
+										// 跳转页面
+										mui.openWindow("index.html", "index.html");
+									} else {
+										app.showToast(data.msg, "error");
+									}
+								}
+							});
 					}
 				});
 			});
