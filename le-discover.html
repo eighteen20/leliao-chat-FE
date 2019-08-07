@@ -9,11 +9,54 @@
 	</head>
 
 	<body>
-		<h1>发现</h1>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-media">
+					<img class="mui-media-object mui-pull-left" 
+						src="image/friends.png" style="max-width: 24px;height: 24px;">
+						<p class="mui-ellipsis" style="line-height: 24px;color: #000000;font-size: 16px;">
+							<span style="margin-left: 10px;">朋友圈</span>
+						</p>
+				</li>
+			</ul>
+			
+			<br/>
+			
+			<ul class="mui-table-view">
+				<li id="li_add_friend" class="mui-table-view-cell mui-media">
+					<img class="mui-media-object mui-pull-left" 
+						src="image/addfriends.png" style="max-width: 24px;height: 24px;">
+						<p class="mui-ellipsis" style="line-height: 24px;color: #000000;font-size: 16px;">
+							<span style="margin-left: 10px;">添加好友</span>
+						</p>
+				</li>
+				<li id="li_scan" class="mui-table-view-cell mui-media">
+					<img class="mui-media-object mui-pull-left" 
+						src="image/scanscan.png" style="max-width: 24px;height: 24px;">
+						<p class="mui-ellipsis" style="line-height: 24px;color: #000000;font-size: 16px;">
+							<span style="margin-left: 10px;">扫一扫</span>
+						</p>
+				</li>
+			</ul>
+		</div>
 		
 		<script src="js/mui.js"></script>
 		<script type="text/javascript">
 			mui.init()
+			
+			mui.plusReady(function () {
+			   
+				var li_add_friend = document.getElementById("li_add_friend");
+				li_add_friend.addEventListener("tap", function() {
+					mui.openWindow("le-discover-search.html", "le-discover-search.html");
+				});
+				
+				var li_scan = document.getElementById("li_scan");
+				li_scan.addEventListener("tap", function() {
+					mui.openWindow("le-discover-scan.html", "le-discover-scan.html");
+				});
+
+			});
 		</script>
 	</body>
 

@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/header.css" type="text/css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<h1 class="mui-title title-color">搜索好友</h1>
+			<a id="submit_search" class="mui-icon mui-icon-right-nav mui-pull-right title-color" 
+				style="font-size: 14px; line-height: 25px;">搜索</a>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-input-row">
+				<input id="input_search" type="text" class="mui-input-speech mui-input-clear" placeholder="好友账号">
+			</div>
+		</div>
+
+
+		<script src="js/mui.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function() {
+				var user = app.getUserGlobalInfo();
+				var myUserId = user.id;
+				
+				var input_search = document.getElementById("input_search");
+				
+				
+				// 提交:搜索好友
+				var submit_search = document.getElementById("submit_search");
+				submit_search.addEventListener("tap", function() {
+					var friendUserName = input_search.value;
+
+					plus.nativeUI.showWaiting("搜索中...")
+					console.log(myUserId + "===" + friendUserName);
+					mui.ajax(app.serverUrl + "/u/searchUser?myUserId=" + myUserId + 
+								"&friendUserName=" + friendUserName, {
+						data: {},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(data){
+							plus.nativeUI.closeWaiting();
+							if (data.status === 200) {
+								// 跳转页面
+								mui.openWindow({
+									url: "le-discover-search-result.html",
+									id: "le-discover-search-result.html",
+									styles: {},
+									extras: {
+										willBeFriend: data.data
+									}
+								});
+							} else {
+								app.showToast(data.msg, "error");
+							}
+						}
+					});
+				})
+				
+				
+			});
+		</script>
+	</body>
+
+</html>
