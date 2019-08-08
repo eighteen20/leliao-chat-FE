@@ -20,7 +20,7 @@
 <body>
 	<!-- 顶部标题栏 -->
 	<header class="mui-bar mui-bar-nav title">
-		<h1 class="mui-title title-color">
+		<h1 id="leliao_title" class="mui-title title-color">
 			<b>乐聊</b>
 		</h1>
 	</header>
@@ -73,6 +73,9 @@
 		}
 		
 		mui.plusReady(function() {
+			// 对网络连接进行监听
+			netChangeSwitch();
+			
 			// 禁用手机实体返回键
 			mui.back = function() {
 				return false;
@@ -109,6 +112,26 @@
 			// 延时加载
 			setTimeout("initData()", 1000);
 		});
+		
+		/**
+		 * 监听网络状态
+		 */
+		function netChangeSwitch() {
+			console.log("netChangeSwitch");
+			document.addEventListener("netchange", function() {
+				var connectionStatus = plus.networkinfo.getCurrentType();
+				console.log(connectionStatus);
+				if (connectionStatus !== 0 && connectionStatus !== 1) {
+					// 重新打开网络连接
+					var leliao_title = document.getElementById("leliao_title");
+					leliao_title.innerHTML = '<b>乐聊</b>';
+				} else {
+					// 关闭网络连接
+					var leliao_title = document.getElementById("leliao_title");
+					leliao_title.innerHTML = '<b>乐聊(网络未连接...)</b>';
+				}
+			});
+		}
 		
 		/**
 		 * 预加载
