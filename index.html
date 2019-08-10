@@ -117,7 +117,6 @@
 		 * 监听网络状态
 		 */
 		function netChangeSwitch() {
-			console.log("netChangeSwitch");
 			document.addEventListener("netchange", function() {
 				var connectionStatus = plus.networkinfo.getCurrentType();
 				console.log(connectionStatus);
